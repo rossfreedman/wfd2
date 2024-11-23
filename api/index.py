@@ -8,19 +8,23 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     try:
-        # Get the absolute path to the CSV file
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        csv_path = os.path.join(base_dir, 'data', 'RestaurantData.csv')
+        # Print current directory and list files for debugging
+        current_dir = os.getcwd()
+        files = os.listdir(current_dir)
         
-        # Read the CSV file
-        df = pd.read_csv(csv_path)
+        # Try to list the data directory
+        data_dir = os.path.join(current_dir, 'data')
+        if os.path.exists(data_dir):
+            data_files = os.listdir(data_dir)
+        else:
+            data_files = "Data directory not found"
         
-        # Get a random restaurant
-        random_restaurant = df.iloc[random.randint(0, len(df)-1)]
-        
-        return render_template('index.html', restaurant=random_restaurant)
+        return f"""
+        Current directory: {current_dir}
+        Files in current directory: {files}
+        Data directory files: {data_files}
+        """
     except Exception as e:
-        # Return the error message for debugging
-        return f"An error occurred: {str(e)}", 500
+        return f"Debug Error: {str(e)}", 500
 
 # Add any other routes you had here
