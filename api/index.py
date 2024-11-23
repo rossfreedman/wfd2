@@ -8,19 +8,24 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     try:
-        # Use the absolute path we now know works
-        csv_path = os.path.join(os.getcwd(), 'data', 'RestaurantData.csv')
+        df = pd.read_csv('data/RestaurantData.csv')
+        random_restaurant = df.sample(n=1).iloc[0].to_dict()
         
-        # Read the CSV file
-        df = pd.read_csv(csv_path)
-        
-        # Get a random restaurant
-        random_restaurant = df.iloc[random.randint(0, len(df)-1)]
-        
-        # For debugging, first let's just return the restaurant data
-        return str(random_restaurant)  # We'll change this to render_template once we confirm it works
+        # Return formatted HTML
+        return f"""
+        <h1>{random_restaurant['Restaurant Name']}</h1>
+        <ul>
+            <li>Cuisine: {random_restaurant['Cuisine']}</li>
+            <li>Price: {'$' * random_restaurant['Price']}</li>
+            <li>Takeout: {random_restaurant['Takeout']}</li>
+            <li><a href="{random_restaurant['URL']}" target="_blank">View Menu</a></li>
+        </ul>
+        """
         
     except Exception as e:
         return f"Debug Error: {str(e)}", 500
 
 # Add any other routes you had here
+
+if __name__ == '__main__':
+    app.run()
